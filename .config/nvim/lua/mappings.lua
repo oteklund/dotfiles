@@ -6,6 +6,8 @@ local config = { noremap = true, silent = true }
 ---@diagnostic disable-next-line: unused-local
 local term_config = { silent = true }
 
+local telescope = require("telescope.builtin")
+
 map("", "<space>", "<nop>", config)
 
 local table = {
@@ -27,8 +29,21 @@ local table = {
 
 		-- plugins mappings
 		--telescope
-		["<leader>ff"] = { "<cmd>Telescope git_files<cr>", desc = "search files that are not gitignored" },
-		["<leader>fF"] = { "<cmd>Telescope find_files<cr>", desc = "search all files" },
+		["<leader>ff"] = {
+			function()
+				telescope.find_files()
+			end,
+			desc = "search files",
+		},
+		["<leader>fF"] = {
+			function()
+				telescope.find_files({
+					hidden = true,
+					no_ignore = true,
+				})
+			end,
+			desc = "search all files",
+		},
 		["<leader>fb"] = { "<cmd>Telescope buffers<cr>", desc = "list open buffers" },
 		["<leader>fh"] = { "<cmd>Telescope oldfiles<cr>", desc = "list previously opened files" },
 		["<leader>g?"] = { "<cmd>Telescope help_tags<cr>", desc = "list available help tags" },
@@ -39,7 +54,6 @@ local table = {
 			"<cmd>Telescope current_buffer_fuzzy_find<cr>",
 			desc = "look for lines matching a pattern in current buffer",
 		},
-		["<leader>fs"] = { "<cmd>Telescope aerial", desc = "open aerial document symbols in a telescope picker" },
 
 		-- lsp
 		["<leader>d"] = {
@@ -71,12 +85,6 @@ local table = {
 				vim.diagnostic.setloclist()
 			end,
 			desc = "add diagnostics to local list",
-		},
-
-		-- aerial
-		["<leader>a"] = {
-			"<cmd>AerialToggle<cr>",
-			desc = "toggle aerial code navigation",
 		},
 	},
 	-- visual mode mappings

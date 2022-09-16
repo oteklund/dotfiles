@@ -9,7 +9,7 @@ local on_attach = function(client, bufnr)
 
 	-- disable conflicting formatters
 	local disabled_formatters = {
-		["tsserver"] = true, -- typescript formatting is handled by eslint_d
+		["tsserver"] = true, -- typescript formatting is handled by eslint
 		["sumneko_lua"] = true, -- lua formatting is handled by stylua
 		["jsonls"] = true,
 		["rust_analyzer"] = true,
@@ -34,12 +34,10 @@ local on_attach = function(client, bufnr)
 	end, bufopts)
 	map("n", "td", vim.lsp.buf.type_definition, bufopts)
 	map("n", "<leader>rn", vim.lsp.buf.rename, bufopts)
-	map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, bufopts)
+	map("n", "<leader>ca", vim.lsp.buf.code_action, bufopts)
 	map("n", "gr", vim.lsp.buf.references, bufopts)
 	map("n", "<leader>lf", vim.lsp.buf.formatting, bufopts)
-
-	-- attach aerial code navigation
-	require("aerial").on_attach(client, bufnr)
+	map("v", "<leader>ca", vim.lsp.buf.range_code_action, bufopts)
 end
 
 -- language servers
@@ -95,11 +93,6 @@ lspconfig.bashls.setup({
 lspconfig.cssls.setup({
 	on_attach = on_attach,
 	capabilities = capabilities,
-})
-
-lspconfig.cssmodules_ls.setup({
-	capabilities = capabilities,
-	on_attach = on_attach,
 })
 
 -- eslint

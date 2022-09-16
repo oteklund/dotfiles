@@ -44,10 +44,9 @@ return require("packer").startup(function(use)
 			---@diagnostic disable-next-line: redundant-parameter
 			null_ls.setup({
 				sources = {
-					null_ls.builtins.code_actions.eslint_d,
+					-- null_ls.builtins.code_actions.eslint_d,
 					null_ls.builtins.completion.luasnip,
-					-- null_ls.builtins.completion.spell, -- word completion
-					null_ls.builtins.diagnostics.eslint_d,
+					-- null_ls.builtins.diagnostics.eslint_d,
 					null_ls.builtins.diagnostics.markdownlint,
 					null_ls.builtins.diagnostics.yamllint,
 					null_ls.builtins.diagnostics.sqlfluff.with({
@@ -56,7 +55,7 @@ return require("packer").startup(function(use)
 					-- luacheck is inactive because luarocks and the
 					-- luarocks binary is not installed yet
 					-- null_ls.builtins.diagnostics.luacheck,
-					null_ls.builtins.formatting.eslint_d,
+					-- null_ls.builtins.formatting.eslint_d,
 					null_ls.builtins.formatting.prettierd,
 					null_ls.builtins.formatting.rustfmt,
 					null_ls.builtins.formatting.stylua,
@@ -224,7 +223,7 @@ return require("packer").startup(function(use)
 				pickers = {
 					find_files = {
 						theme = "ivy",
-						hidden = true,
+            hidden = true,
 					},
 					git_files = {
 						theme = "ivy",
@@ -272,7 +271,6 @@ return require("packer").startup(function(use)
 				sources = {
 					{ name = "luasnip" },
 					{ name = "nvim_lsp" },
-					{ name = "rg" },
 					-- more sources
 				},
 				{
@@ -344,9 +342,9 @@ return require("packer").startup(function(use)
 			local feline = require("feline")
 			local catppuccin = require("catppuccin.groups.integrations.feline")
 			-- local catppuccin_components = catppuccin.get()
-      -- local my_components = {
+			-- local my_components = {
 
-      -- }
+			-- }
 			-- print(catppuccin_components.active[3][3])
 			feline.setup({
 				components = catppuccin.get(),
@@ -415,8 +413,12 @@ return require("packer").startup(function(use)
 
 			dashboard.section.buttons.val = {
 				dashboard.button("e", "  new file", ":ene <BAR> startinsert <CR>"),
-				dashboard.button("ff", "  look for git files", "<cmd>Telescope git_files<cr>"),
-				dashboard.button("fF", "  look for files", "<cmd>Telescope find_files<cr>"),
+				dashboard.button("ff", "  look for files", "<cmd>Telescope find_files<cr>"),
+				dashboard.button(
+					"fF",
+					"  look for *all* files",
+					"<cmd>Telescope find_files hidden=true no_ignore=true<cr>"
+				),
 				dashboard.button("q", "  quit NVIM", ":qa<CR>"),
 				dashboard.button("fw", "  look for words", "<cmd>Telescope live_grep<cr>"),
 				dashboard.button("fh", "  list recent files", "<cmd>Telescope oldfiles<cr>"),
@@ -435,13 +437,8 @@ return require("packer").startup(function(use)
 		end,
 	})
 
-	-- aerial is a document code outline window for symbol navigation
-	use({
-		"stevearc/aerial.nvim",
-		config = function()
-			require("aerial").setup()
-		end,
-	})
+	-- session management
+	use({ "tpope/vim-obsession" })
 end)
 
 -- adds matching brackets
