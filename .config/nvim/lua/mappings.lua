@@ -15,7 +15,10 @@ local table = {
 	n = {
 		-- default mappings
 		-- remove search highlighting
-		["<leader>h"] = { "<cmd>nohlsearch<cr>", desc = "clear search highlights" },
+		["<leader>h"] = {
+			"<cmd>nohlsearch<cr>",
+			desc = "clear search highlights",
+		},
 		["<leader>ö"] = {
 			function()
 				print("hej =)")
@@ -24,8 +27,14 @@ local table = {
 		},
 		["å"] = "^",
 		["Å"] = { "<C-6>", desc = "toggle alternate file" },
-		["<leader>e"] = { "<cmd>Lexplore 25<cr>", desc = "open netrw file explorer to the left" },
-		["<leader>bn"] = { "<cmd>BufferNumber<cr>", desc = "print the current buffer number" },
+		["<leader>e"] = {
+			"<cmd>Lexplore 25<cr>",
+			desc = "open netrw file explorer to the left",
+		},
+		["<leader>bn"] = {
+			"<cmd>BufferNumber<cr>",
+			desc = "print the current buffer number",
+		},
 
 		-- plugins mappings
 		--telescope
@@ -44,12 +53,30 @@ local table = {
 			end,
 			desc = "search all files",
 		},
-		["<leader>fb"] = { "<cmd>Telescope buffers<cr>", desc = "list open buffers" },
-		["<leader>fh"] = { "<cmd>Telescope oldfiles<cr>", desc = "list previously opened files" },
-		["<leader>g?"] = { "<cmd>Telescope help_tags<cr>", desc = "list available help tags" },
-		["<leader>fw"] = { "<cmd>Telescope live_grep<cr>", desc = "look for lines matching a pattern" },
-		["<leader>fd"] = { "<cmd>Telescope diagnostics bufnr=0<cr>", desc = "list buffer diagnostics" },
-		["<leader>fD"] = { "<cmd>Telescope diagnostics<cr>", desc = "list all workspace diagnostics" },
+		["<leader>fb"] = {
+			"<cmd>Telescope buffers<cr>",
+			desc = "list open buffers",
+		},
+		["<leader>fh"] = {
+			"<cmd>Telescope oldfiles<cr>",
+			desc = "list previously opened files",
+		},
+		["<leader>g?"] = {
+			"<cmd>Telescope help_tags<cr>",
+			desc = "list available help tags",
+		},
+		["<leader>fw"] = {
+			"<cmd>Telescope live_grep<cr>",
+			desc = "look for lines matching a pattern",
+		},
+		["<leader>fd"] = {
+			"<cmd>Telescope diagnostics bufnr=0<cr>",
+			desc = "list buffer diagnostics",
+		},
+		["<leader>fD"] = {
+			"<cmd>Telescope diagnostics<cr>",
+			desc = "list all workspace diagnostics",
+		},
 		["<leader>f/"] = {
 			"<cmd>Telescope current_buffer_fuzzy_find<cr>",
 			desc = "look for lines matching a pattern in current buffer",
@@ -58,7 +85,11 @@ local table = {
 		-- lsp
 		["<leader>d"] = {
 			function()
-				vim.diagnostic.open_float()
+				vim.diagnostic.open_float({
+					opts = {
+						scope = "line",
+					},
+				})
 			end,
 			desc = "open diagnostics in a floating window",
 		},

@@ -49,7 +49,7 @@ local cmp_lsp = require("cmp_nvim_lsp")
 -- only provide completions when snippet support is enabled.
 -- To enable completion, install a snippet plugin and add the
 -- following override to your language client capabilities during setup.
-local capabilities = cmp_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = cmp_lsp.default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
@@ -84,10 +84,11 @@ lspconfig.prosemd_lsp.setup({
 })
 
 -- bash
-lspconfig.bashls.setup({
-	capabilities = capabilities,
-	on_attach = on_attach,
-})
+-- currently out of use since it messes up .env files
+-- lspconfig.bashls.setup({
+-- 	capabilities = capabilities,
+-- 	on_attach = on_attach,
+-- })
 
 -- css
 lspconfig.cssls.setup({

@@ -28,6 +28,9 @@ return require("packer").startup(function(use)
 				highlight = {
 					enable = true,
 				},
+				indent = {
+					enable = true,
+				},
 			})
 		end,
 	})
@@ -79,23 +82,24 @@ return require("packer").startup(function(use)
 	})
 
 	-- smooth scrolling 8-)
-	use({
-		"declancm/cinnamon.nvim",
-		config = function()
-			require("cinnamon").setup({
-				default_keymaps = true, -- Create default keymaps.
-				extra_keymaps = true, -- Create extra keymaps.
-				max_length = 235,
-				scroll_limit = -1,
-				always_scroll = true,
-				default_delay = 4,
-			})
-		end,
-	})
+	-- use({
+	-- 	"declancm/cinnamon.nvim",
+	-- 	config = function()
+	-- 		require("cinnamon").setup({
+	-- 			default_keymaps = true, -- Create default keymaps.
+	-- 			extra_keymaps = true, -- Create extra keymaps.
+	-- 			max_length = 235,
+	-- 			scroll_limit = -1,
+	-- 			always_scroll = true,
+	-- 			default_delay = 4,
+	-- 		})
+	-- 	end,
+	-- })
 
 	-- surround pieces of code with parenthesis, quotes etc...
 	use({ "tpope/vim-surround" })
 
+	-- add some language symbols and stuff, uses by feline :3
 	use({
 		"kyazdani42/nvim-web-devicons",
 		config = function()
@@ -132,9 +136,6 @@ return require("packer").startup(function(use)
 					},
 				},
 			})
-
-			-- integrations
-			require("catppuccin.groups.integrations.feline").setup({})
 
 			vim.cmd([[colorscheme catppuccin]])
 		end,
@@ -194,7 +195,12 @@ return require("packer").startup(function(use)
 	-- a number of words / chunks / whatever
 	use({ "tpope/vim-repeat" })
 
+	-- commentary allows for commenting out code
 	use({ "tpope/vim-commentary" })
+
+	-- creates or updates a vim session file on exit or layout change,
+	-- so that one can resume where they left off!
+	use({ "tpope/vim-obsession" })
 
 	-- telescope is used for fuzzy finding
 	use({
@@ -223,7 +229,7 @@ return require("packer").startup(function(use)
 				pickers = {
 					find_files = {
 						theme = "ivy",
-            hidden = true,
+						hidden = true,
 					},
 					git_files = {
 						theme = "ivy",
@@ -269,8 +275,8 @@ return require("packer").startup(function(use)
 					end,
 				},
 				sources = {
-					{ name = "luasnip" },
 					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
 					-- more sources
 				},
 				{
@@ -304,6 +310,9 @@ return require("packer").startup(function(use)
 						end
 					end, { "i", "s" }),
 				}),
+				performance = {
+					trigger_debounce_time = 120,
+				},
 			})
 
 			-- Set configuration for specific filetype.
@@ -340,20 +349,21 @@ return require("packer").startup(function(use)
 		"feline-nvim/feline.nvim",
 		config = function()
 			local feline = require("feline")
-			local catppuccin = require("catppuccin.groups.integrations.feline")
-			-- local catppuccin_components = catppuccin.get()
-			-- local my_components = {
 
-			-- }
-			-- print(catppuccin_components.active[3][3])
+			local catppuccin = require("catppuccin.groups.integrations.feline")
+
+			catppuccin.setup({
+				sett = {
+					show_modified = true,
+				},
+				assets = {
+					mode_icon = "",
+				},
+				file_modified_icon = "",
+			})
+
 			feline.setup({
 				components = catppuccin.get(),
-				-- provider = {
-				-- 	name = "file_info",
-				-- 	opts = {
-				-- 		file_modified_icon = "",
-				-- 	},
-				-- },
 			})
 		end,
 	})
@@ -436,9 +446,6 @@ return require("packer").startup(function(use)
 			require("dressing").setup()
 		end,
 	})
-
-	-- session management
-	use({ "tpope/vim-obsession" })
 end)
 
 -- adds matching brackets
