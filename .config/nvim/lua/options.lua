@@ -31,3 +31,10 @@ local globalOptions = {
 for key, value in pairs(globalOptions) do
 	vim.g[key] = value
 end
+
+-- filetype detection
+vim.filetype.add({
+	extension = {
+		rest = "http",
+	},
+})

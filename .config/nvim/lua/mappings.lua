@@ -69,6 +69,18 @@ local table = {
 			"<cmd>Telescope live_grep<cr>",
 			desc = "look for lines matching a pattern",
 		},
+		["<leader>fW"] = {
+			function()
+				telescope.live_grep({
+					additional_args = function()
+						return {
+							"--hidden",
+						}
+					end,
+				})
+			end,
+			desc = "look for text matching a pattern, including hidden files",
+		},
 		["<leader>fd"] = {
 			"<cmd>Telescope diagnostics bufnr=0<cr>",
 			desc = "list buffer diagnostics",

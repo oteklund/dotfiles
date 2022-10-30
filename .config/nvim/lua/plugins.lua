@@ -20,6 +20,9 @@ return require("packer").startup(function(use)
 		auto_install = true,
 		config = function()
 			local treesitter = require("nvim-treesitter.configs")
+			local parsers = require("nvim-treesitter.parsers")
+
+			parsers.filetype_to_parsername.rest = "http"
 
 			treesitter.setup({
 				rainbow = {
@@ -72,7 +75,7 @@ return require("packer").startup(function(use)
 							buffer = bufnr,
 							callback = function()
 								-- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
-								vim.lsp.buf.formatting_sync()
+								vim.lsp.buf.format()
 							end,
 						})
 					end
@@ -114,8 +117,8 @@ return require("packer").startup(function(use)
 		"catppuccin/nvim",
 		as = "catppuccin",
 		config = function()
-			vim.g.catppuccin_flavour = "mocha" --latte, frappe, macchiato, mocha
 			require("catppuccin").setup({
+				flavour = "mocha",
 				telescope = true,
 				markdown = true,
 				treesitter = true,
@@ -137,7 +140,7 @@ return require("packer").startup(function(use)
 				},
 			})
 
-			vim.cmd([[colorscheme catppuccin]])
+			vim.api.nvim_command("colorscheme catppuccin")
 		end,
 	})
 
@@ -173,7 +176,7 @@ return require("packer").startup(function(use)
 					end, { expr = true })
 
 					map({ "n", "v" }, "<leader>hr", ":Gitsigns reset_hunk<CR>")
-					map("n", "<leader>hp", gs.preview_hunk)
+					map("n", "<leader>hh", gs.preview_hunk)
 					map("n", "<leader>hb", gs.toggle_current_line_blame)
 					map("n", "<leader>hd", gs.diffthis)
 					map("n", "<leader>hD", function()
@@ -350,9 +353,9 @@ return require("packer").startup(function(use)
 		config = function()
 			local feline = require("feline")
 
-			local catppuccin = require("catppuccin.groups.integrations.feline")
+			local ctp_feline = require("catppuccin.groups.integrations.feline")
 
-			catppuccin.setup({
+			ctp_feline.setup({
 				sett = {
 					show_modified = true,
 				},
@@ -363,7 +366,7 @@ return require("packer").startup(function(use)
 			})
 
 			feline.setup({
-				components = catppuccin.get(),
+				components = ctp_feline.get(),
 			})
 		end,
 	})
@@ -444,6 +447,49 @@ return require("packer").startup(function(use)
 		"stevearc/dressing.nvim",
 		config = function()
 			require("dressing").setup()
+		end,
+	})
+
+	-- making http requests directly from vim
+	use({
+		"NTBBloodbath/rest.nvim",
+		requires = { "nvim-lua/plenary.nvim" },
+		config = function()
+			require("rest-nvim").setup({
+				-- Open request results in a horizontal split
+				result_split_horizontal = false,
+				-- Keep the http file buffer above|left when split horizontal|vertical
+				result_split_in_place = false,
+				-- Skip SSL verification, useful for unknown certificates
+				skip_ssl_verification = false,
+				-- Encode URL before making request
+				encode_url = true,
+				-- Highlight request on run
+				highlight = {
+					enabled = true,
+					timeout = 150,
+				},
+				result = {
+					-- toggle showing URL, HTTP info, headers at top the of result window
+					show_url = true,
+					show_http_info = true,
+					show_headers = true,
+					-- executables or functions for formatting response body [optional]
+					-- set them to nil if you want to disable them
+					formatters = {
+						json = "jq",
+						html = function(body)
+							return vim.fn.system({ "tidy", "-i", "-q", "-" }, body)
+						end,
+					},
+				},
+				-- Jump to request line on run
+				jump_to_request = false,
+				env_file = ".env",
+				custom_dynamic_variables = {},
+				yank_dry_run = true,
+				filetypes = { "http", "rest" },
+			})
 		end,
 	})
 end)
