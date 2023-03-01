@@ -6,7 +6,7 @@ return require("packer").startup(function(use)
 
 	use("neovim/nvim-lspconfig")
 
-	-- mason is used for managing editor tooling suchas lsp servers
+	-- mason is used for managing editor tooling such as lsp servers
 	use({
 		"williamboman/mason.nvim",
 		config = function()
@@ -31,6 +31,7 @@ return require("packer").startup(function(use)
 				highlight = {
 					enable = true,
 				},
+				-- the treesitter indentation is still in beta
 				indent = {
 					enable = true,
 				},
@@ -47,11 +48,11 @@ return require("packer").startup(function(use)
 		config = function()
 			local null_ls = require("null-ls")
 			local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
 			---@diagnostic disable-next-line: redundant-parameter
 			null_ls.setup({
 				sources = {
 					-- null_ls.builtins.code_actions.eslint_d,
-					null_ls.builtins.completion.luasnip,
 					-- null_ls.builtins.diagnostics.eslint_d,
 					null_ls.builtins.diagnostics.markdownlint,
 					null_ls.builtins.diagnostics.yamllint,
@@ -65,6 +66,7 @@ return require("packer").startup(function(use)
 					null_ls.builtins.formatting.prettierd,
 					null_ls.builtins.formatting.rustfmt,
 					null_ls.builtins.formatting.stylua,
+					null_ls.builtins.completion.luasnip,
 				},
 				-- format on save
 				on_attach = function(client, bufnr)
@@ -75,6 +77,7 @@ return require("packer").startup(function(use)
 							buffer = bufnr,
 							callback = function()
 								-- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
+								-- vim.lsp.buf.format({ bufnr = bufnr })
 								vim.lsp.buf.format()
 							end,
 						})
@@ -85,22 +88,30 @@ return require("packer").startup(function(use)
 	})
 
 	-- smooth scrolling 8-)
-	-- use({
-	-- 	"declancm/cinnamon.nvim",
-	-- 	config = function()
-	-- 		require("cinnamon").setup({
-	-- 			default_keymaps = true, -- Create default keymaps.
-	-- 			extra_keymaps = true, -- Create extra keymaps.
-	-- 			max_length = 235,
-	-- 			scroll_limit = -1,
-	-- 			always_scroll = true,
-	-- 			default_delay = 4,
-	-- 		})
-	-- 	end,
-	-- })
+	use({
+		"declancm/cinnamon.nvim",
+		config = function()
+			require("cinnamon").setup({
+				default_keymaps = true, -- Create default keymaps.
+				extra_keymaps = true, -- Create extra keymaps.
+				extended_keymaps = true,
+				max_length = 235,
+				scroll_limit = -1,
+				always_scroll = true,
+				default_delay = 3,
+				centered = true,
+			})
+		end,
+	})
 
 	-- surround pieces of code with parenthesis, quotes etc...
 	use({ "tpope/vim-surround" })
+
+	-- this one is cool and does many things!
+	-- case coercion (e.g. from snake_case to MixedCase with "crm"
+	-- case-preserving substitution: :%Subvert/facilit{y,ies}/building{,s}/g
+	-- abbreviations to help spell difficult words
+	use({ "tpope/vim-abolish" })
 
 	-- add some language symbols and stuff, uses by feline :3
 	use({
@@ -119,24 +130,41 @@ return require("packer").startup(function(use)
 		config = function()
 			require("catppuccin").setup({
 				flavour = "mocha",
-				telescope = true,
-				markdown = true,
-				treesitter = true,
-				ts_rainbow = true,
-				native_lsp = {
+				background = {
+					light = "latte",
+					dark = "mocha",
+				},
+				integrations = {
+					telescope = true,
+					markdown = true,
+					treesitter = true,
+					ts_rainbow = true,
+					native_lsp = {
+						enabled = true,
+						virtual_text = {
+							errors = { "italic" },
+							hints = { "italic" },
+							warnings = { "italic" },
+							information = { "italic" },
+						},
+						underlines = {
+							errors = { "underline" },
+							hints = { "underline" },
+							warnings = { "underline" },
+							information = { "underline" },
+						},
+					},
+					gitgutter = true,
+					treesitter_context = true,
+				},
+				dim_inactive = {
 					enabled = true,
-					virtual_text = {
-						errors = { "italic" },
-						hints = { "italic" },
-						warnings = { "italic" },
-						information = { "italic" },
-					},
-					underlines = {
-						errors = { "underline" },
-						hints = { "underline" },
-						warnings = { "underline" },
-						information = { "underline" },
-					},
+					shade = "dark",
+					percentage = 0.20,
+				},
+				navic = {
+					enabled = false,
+					custom_bg = "NONE",
 				},
 			})
 
@@ -250,8 +278,18 @@ return require("packer").startup(function(use)
 	-- makes telescope look faster
 	use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" })
 
+	-- add symbol sources for telescope.builtin.symbols
+	use({ "nvim-telescope/telescope-symbols.nvim" })
+
 	-- snippets and code completion
-	use({ "L3MON4D3/LuaSnip" })
+	use({
+		"L3MON4D3/LuaSnip",
+		config = function()
+			require("luasnip.loaders.from_vscode").lazy_load()
+		end,
+	})
+
+	-- use({ "rafamadriz/friendly-snippets" })
 
 	use({ "saadparwaiz1/cmp_luasnip" })
 
@@ -271,38 +309,33 @@ return require("packer").startup(function(use)
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 
+			local has_words_before = function()
+				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+				return col ~= 0
+					and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+			end
 			cmp.setup({
+				window = {
+					completion = cmp.config.window.bordered(),
+					documentation = cmp.config.window.bordered(),
+				},
 				snippet = {
 					expand = function(args)
-						luasnip.lsp_expand(args.body)
+						require("luasnip").lsp_expand(args.body)
 					end,
 				},
-				sources = {
-					{ name = "nvim_lsp" },
-					{ name = "luasnip" },
-					-- more sources
-				},
-				{
-					{ name = "buffer" },
-				},
-				mapping = cmp.mapping.preset.insert({
-					["<C-b>"] = cmp.mapping.scroll_docs(-4),
-					["<C-f>"] = cmp.mapping.scroll_docs(4),
-					["<C-Space>"] = cmp.mapping.complete(),
-					["<C-e>"] = cmp.mapping.abort(),
-					["<CR>"] = cmp.mapping.confirm({ select = true }),
+				mapping = {
 					["<Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.select_next_item()
 						elseif luasnip.expand_or_jumpable() then
 							luasnip.expand_or_jump()
-						-- elseif has_words_before() then //FIXME this does not work
-						--    cmp.complete()
+						elseif has_words_before() then
+							cmp.complete()
 						else
 							fallback()
 						end
 					end, { "i", "s" }),
-
 					["<S-Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.select_prev_item()
@@ -312,17 +345,37 @@ return require("packer").startup(function(use)
 							fallback()
 						end
 					end, { "i", "s" }),
-				}),
-				performance = {
-					trigger_debounce_time = 120,
+					["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
+					["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
+					["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
+					["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
+					["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+					["<C-y>"] = cmp.config.disable,
+					["<C-e>"] = cmp.mapping({
+						i = cmp.mapping.abort(),
+						c = cmp.mapping.close(),
+					}),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
 				},
+				sources = cmp.config.sources({
+					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
+					{ name = "path" },
+					{ name = "buffer", keyword_length = 5 },
+				}),
 			})
 
 			-- Set configuration for specific filetype.
+			cmp.setup.filetype("gitcommit", {
+				sources = cmp.config.sources({
+					{ name = "cmp_git" }, -- You can specify the `cmp_git` source if you were installed it.
+				}, {
+					{ name = "buffer" },
+				}),
+			})
+
 			-- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
-			-- TODO: move this into the main hash above
 			cmp.setup.cmdline("/", {
-				mapping = cmp.mapping.preset.cmdline(),
 				sources = {
 					{ name = "buffer" },
 				},
@@ -330,7 +383,6 @@ return require("packer").startup(function(use)
 
 			-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
 			cmp.setup.cmdline(":", {
-				mapping = cmp.mapping.preset.cmdline(),
 				sources = cmp.config.sources({
 					{ name = "path" },
 				}, {
@@ -340,6 +392,8 @@ return require("packer").startup(function(use)
 		end,
 	})
 
+	-- colorises colour codes in text (like #dab, Firebrick)
+	-- toggle using ColorizerToggle
 	use({
 		"norcalli/nvim-colorizer.lua",
 		config = function()
@@ -361,8 +415,8 @@ return require("packer").startup(function(use)
 				},
 				assets = {
 					mode_icon = "",
+					file_modified_icon = "", -- this doesn't work =(
 				},
-				file_modified_icon = "",
 			})
 
 			feline.setup({
@@ -372,7 +426,6 @@ return require("packer").startup(function(use)
 	})
 
 	-- code formatting
-	-- use "sbdchd/neoformat"
 	use({
 		"MunifTanjim/prettier.nvim",
 		config = function()
@@ -442,6 +495,7 @@ return require("packer").startup(function(use)
 			alpha.setup(dashboard.config)
 		end,
 	})
+
 	-- dressing gives us some ui enhancements
 	use({
 		"stevearc/dressing.nvim",
@@ -490,6 +544,17 @@ return require("packer").startup(function(use)
 				yank_dry_run = true,
 				filetypes = { "http", "rest" },
 			})
+		end,
+
+		-- debugging! TODO: configure
+		-- use("mfussenegger/nvim-dap"),
+	})
+
+	-- adds a loading spinner
+	use({
+		"j-hui/fidget.nvim",
+		config = function()
+			require("fidget").setup()
 		end,
 	})
 end)

@@ -1,6 +1,8 @@
 -- options / sets
 local options = {
-	clipboard = "unnamedplus",
+	-- the unnamedplus clipboard makes all yanks go to the system clipboard
+	-- directly and system copying overwrites the default register as well
+	-- clipboard = "unnamedplus",
 	expandtab = true,
 	ignorecase = true,
 	number = true,
@@ -18,6 +20,7 @@ local options = {
 	termguicolors = true,
 	wildignore = vim.opt.wildignore + "node_modules",
 	guicursor = "",
+	completeopt = "menu,menuone,noselect",
 }
 
 for key, value in pairs(options) do

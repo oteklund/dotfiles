@@ -131,3 +131,6 @@ export PATH="/home/oteklund/.config/language-servers/lua/bin:$PATH"
 export PATH="$HOME/.cargo/env:$PATH"
 
 alias dotfiles="/usr/bin/git --git-dir=/home/oteklund/.config/.dotfiles --work-tree=/home/oteklund"
+
+export EDITOR=nvim
+export VISUAL=nvim

@@ -93,6 +93,20 @@ local table = {
 			"<cmd>Telescope current_buffer_fuzzy_find<cr>",
 			desc = "look for lines matching a pattern in current buffer",
 		},
+		["<leader>fs"] = {
+			telescope.lsp_document_symbols,
+			desc = "list symbols in the current buffer",
+		},
+		["<leader>fS"] = {
+			-- NOTE: there is also lsp_dynamic_workspace_symbols, not sure what the
+			--       difference between the two is
+			telescope.lsp_workspace_symbols,
+			desc = "list symbols in the current workspace",
+		},
+		["<leader>E"] = {
+			telescope.symbols,
+			desc = "select and insert a symbol (e.g. emoji)",
+		},
 
 		-- lsp
 		["<leader>d"] = {
