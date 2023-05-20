@@ -415,7 +415,7 @@ return require("packer").startup(function(use)
 				},
 				assets = {
 					mode_icon = "",
-					file_modified_icon = "", -- this doesn't work =(
+					-- file_modified_icon = "", -- this doesn't work =(
 				},
 			})
 
@@ -557,6 +557,8 @@ return require("packer").startup(function(use)
 			require("fidget").setup()
 		end,
 	})
+
+	use("github/copilot.vim")
 end)
 
 -- adds matching brackets
