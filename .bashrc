@@ -129,8 +129,14 @@ export FZF_DEFAULT_OPTS=" \
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="/home/oteklund/.config/language-servers/lua/bin:$PATH"
 export PATH="$HOME/.cargo/env:$PATH"
+export PATH="$PATH:/usr/local/go/bin"
+export PATH="$PATH:/home/oteklund/go/bin"
 
 alias dotfiles="/usr/bin/git --git-dir=/home/oteklund/.config/.dotfiles --work-tree=/home/oteklund"
 
 export EDITOR=nvim
 export VISUAL=nvim
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH=$BUN_INSTALL/bin:$PATH
